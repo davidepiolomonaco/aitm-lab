@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b2341">
+  <meta name="description" content="Fictional AllSafe employee workspace — frontend demo only.">
+  <title>Workspace | AllSafe Cybersecurity</title>
+  <link rel="stylesheet" href="workspace.css">
+</head>
+
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="header-inner">
+        <a href="workspace.html" class="logo-link" aria-label="AllSafe Workspace home">
+          <img src="allsafe-logo.png" alt="Allsafe Cybersecurity" class="brand-logo">
+        </a>
+        
+        <div class="header-right">
+          <span class="header-user"><span class="user-avatar" aria-hidden="true">EA</span><span>Elliot Alderson</span></span>
+          <a class="logout" href="../allsafe-login/login.html" aria-label="Return to sign in">Sign out <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3M14 16l4-4-4-4M18 12H9"/></svg></a>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="breadcrumbs">ALLSAFE <span>/</span> WORKSPACE</div>
+      <h1>Welcome back, Elliot<span class="period">.</span></h1>
+      <p class="subtitle">Your AllSafe workspace.</p>
+
+      <section aria-labelledby="resources-title" class="resources">
+        <div class="section-heading"><h2 id="resources-title">Workspace</h2><span>INTERNAL RESOURCES</span></div>
+        
+        <div class="resource-grid">
+          <article class="resource-card">
+            <div class="resource-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.4-4.1 3-6 7.5-6s7.1 1.9 7.5 6"/></svg></div>
+            <h3>My Profile</h3>
+            <p>Employee information and account details.</p>
+          </article>
+          
+          <article class="resource-card">
+            <div class="resource-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/><path d="M3 11h18"/></svg></div>
+            <h3>Internal Resources</h3>
+            <p>Corporate documentation and team resources.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="account" aria-labelledby="account-title">
+        <h2 id="account-title">Account overview</h2>
+        <dl>
+          <div><dt>Employee</dt><dd>Elliot Alderson</dd></div>
+          <div><dt>Corporate email</dt><dd>elliot.alderson@allsafe.net</dd></div>
+          <div><dt>Department</dt><dd>Cybersecurity Operations</dd></div>
+        </dl>
+      </section>
+    </main>
+
+    <footer class="footer"><span>© AllSafe Cybersecurity</span></footer>
+  </div>
+</body>
+</html>

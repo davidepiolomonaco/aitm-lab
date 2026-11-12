@@ -15,7 +15,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-allsafe}:${POSTGRES_PASSWORD:-local-demo-db-password}@db:5432/${POSTGRES_DB:-allsafe}
       DEMO_EMAIL: ${DEMO_EMAIL:-elliot.alderson@allsafe.net}
-      DEMO_PASSWORD: ${DEMO_PASSWORD:-DemoPass123!}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-Pass123}
       SESSION_TTL_MINUTES: ${SESSION_TTL_MINUTES:-45}
       COOKIE_SECURE: 'false' # local HTTP only; enable with HTTPS
     depends_on:

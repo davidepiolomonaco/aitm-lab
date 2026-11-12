@@ -1,0 +1,13 @@
+name: allsafe-replica
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "127.0.0.1:${REPLICA_PORT:-8082}:80"
+    networks:
+      - replica_net
+networks:
+  replica_net:
+    internal: true

@@ -6,4 +6,4 @@ COPY . .
 RUN useradd -r -u 10001 allsafe && chown -R allsafe:allsafe /app
 USER allsafe
 EXPOSE 5000
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "--workers", "2", "--access-logfile", "-", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--workers", "2", "--preload", "--access-logfile", "-", "app:app"]

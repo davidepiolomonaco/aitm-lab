@@ -43,9 +43,10 @@ The credentials are relayed as typed, not hard-coded — this is what a real AiT
 ## Running it
 
 ```bash
-cp .env.example .env        # first run only
-scripts/start.sh            # brings up both stacks + the shared relay network
-scripts/monitor.py          # optional: live event timeline for the class
+cp .env.example .env                       # first run only
+pip install -r scripts/requirements.txt    # first run only — monitor.py runs on the host, not in Docker
+scripts/start.sh                           # brings up both stacks + the shared relay network
+scripts/monitor.py                         # optional: live event timeline for the class
 ```
 
 - Real app: `http://127.0.0.1:8081` (log in with the demo account directly, to show the "normal" flow first)

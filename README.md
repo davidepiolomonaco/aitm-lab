@@ -1,8 +1,20 @@
 # Allsafe AiTM Awareness Lab
 
+[![License: MIT](https://img.shields.io/github/license/davidepiolomonaco/aitm-lab)](LICENSE)
+[![Docker Compose](https://img.shields.io/badge/docker--compose-required-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Scope](https://img.shields.io/badge/scope-classroom%20only-critical)](#what-it-demonstrates)
+
 An educational, local-only demonstration of an **Adversary-in-the-Middle (AiTM) credential relay**, built for red-teaming / security-awareness lectures. The fictional company is inspired by *Mr. Robot*. Allsafe names and imagery are third-party references, not official assets or licensed by the project.
 
 > **For isolated classroom use only.** This lab contains a working credential-relay proxy. Do not point it at anything other than its own bundled demo app, do not expose it beyond `127.0.0.1`, and do not reuse any part of it against a real login page or real users.
+
+## Contents
+
+- [What it demonstrates](#what-it-demonstrates)
+- [Architecture](#architecture)
+- [Running it](#running-it)
+- [What a production AiTM kit adds (and why this lab stops short)](#what-a-production-aitm-kit-adds-and-why-this-lab-stops-short)
+- [Follow-up lesson: replaying the stolen token in Burp Suite](#follow-up-lesson-replaying-the-stolen-token-in-burp-suite)
 
 ## What it demonstrates
 

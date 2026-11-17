@@ -6,6 +6,8 @@ services:
       dockerfile: nginx/Dockerfile
     ports:
       - "127.0.0.1:${REPLICA_PORT:-8082}:80"
+    depends_on:
+      - relay
     networks:
       # Not internal: required so the published host port actually works —
       # an `internal: true` network has no NAT route in either direction,
@@ -13,6 +15,22 @@ services:
       # silently never bind without this.
       - replica_front
       - replica_net
+  relay:
+    build: ./relay
+    environment:
+      # Container-to-container address on the shared relay network.
+      LEGITIMATE_INTERNAL_URL: http://legitimate-gateway
+      # Browser-reachable address of the real app, for the final redirect.
+      LEGITIMATE_PUBLIC_URL: http://127.0.0.1:${LEGITIMATE_PORT:-8081}
+      COOKIE_SECURE: 'false' # local HTTP only; enable with HTTPS
+      LOOT_DIR: /app/loot
+    volumes:
+      # Captured sessions survive restarts, so you can pull them up again
+      # in the follow-up Burp Suite lesson — see scripts/loot.sh.
+      - loot_data:/app/loot
+    networks:
+      - replica_net
+      - relay_net
 networks:
   # Bridges the published port to the host. Only nginx attaches to it; it
   # never carries relay traffic, so it doesn't widen the relay's own
@@ -20,3 +38,10 @@ networks:
   replica_front: {}
   replica_net:
     internal: true
+  # Shared with legitimate/compose.yaml: the relay service's only path to
+  # the real app. Still internal: no route to the host's internet.
+  relay_net:
+    name: aitm-relay-net
+    external: true
+volumes:
+  loot_data:

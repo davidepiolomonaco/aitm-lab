@@ -12,5 +12,7 @@ if [[ "${1:-}" != "--yes" ]]; then
  [[ "$reply" == RESET ]] || exit 1
 fi
 
+docker network inspect aitm-relay-net >/dev/null 2>&1 || docker network create --internal aitm-relay-net >/dev/null
+
 docker-compose -f "$ROOT/legitimate/compose.yaml" down -v
 docker-compose -f "$ROOT/legitimate/compose.yaml" up -d --build

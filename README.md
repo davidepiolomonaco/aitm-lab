@@ -14,7 +14,7 @@ An educational, local-only demonstration of an **Adversary-in-the-Middle (AiTM) 
 - [Architecture](#architecture)
 - [Running it](#running-it)
 - [What a production AiTM kit adds (and why this lab stops short)](#what-a-production-aitm-kit-adds-and-why-this-lab-stops-short)
-- [Follow-up lesson: replaying the stolen token in Burp Suite](#follow-up-lesson-replaying-the-stolen-token-in-burp-suite)
+- [Proving it: replaying the stolen session in Burp Suite](#proving-it-replaying-the-stolen-session-in-burp-suite)
 
 ## What it demonstrates
 
@@ -85,7 +85,7 @@ A real kit instead runs a **persistent, transparent proxy**: there is no edge fr
 
 This lab deliberately stops at the credential-relay + session-theft core and does not implement the reverse proxy, domain/TLS, MFA relay, or evasion layers — those are what turn a teaching demo into a deployable attack tool, and are out of scope for an isolated classroom lab.
 
-## Follow-up lesson: replaying the stolen token in Burp Suite
+## Proving it: replaying the stolen session in Burp Suite
 
 Every successful relay persists the exfiltrated cookies to a named Docker volume (`loot_data`), independent of the live demo's terminal session, so you can come back to it in the next lesson:
 

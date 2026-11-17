@@ -13,20 +13,23 @@
   <div class="page">
     <header class="topbar">
       <div class="header-inner">
-        <a href="workspace.html" class="logo-link" aria-label="AllSafe Workspace home">
+        <a href="/workspace" class="logo-link" aria-label="AllSafe Workspace home">
           <img src="../static/allsafe-logo.png" alt="Allsafe Cybersecurity" class="brand-logo">
         </a>
         
         <div class="header-right">
-          <span class="header-user"><span class="user-avatar" aria-hidden="true">EA</span><span>Elliot Alderson</span></span>
-          <a class="logout" href="../allsafe-login/login.html" aria-label="Return to sign in">Sign out <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3M14 16l4-4-4-4M18 12H9"/></svg></a>
+          <span class="header-user"><span class="user-avatar" aria-hidden="true">{{ user.initials }}</span><span>{{ user.full_name }}</span></span>
+          <form method="post" action="/logout">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="logout" aria-label="Sign out">Sign out <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3M14 16l4-4-4-4M18 12H9"/></svg></button>
+          </form>
         </div>
       </div>
     </header>
 
     <main class="content">
       <div class="breadcrumbs">ALLSAFE <span>/</span> WORKSPACE</div>
-      <h1>Welcome back, Elliot<span class="period">.</span></h1>
+      <h1>Welcome back, {{ user.first_name }}<span class="period">.</span></h1>
       <p class="subtitle">Your AllSafe workspace.</p>
 
       <section aria-labelledby="resources-title" class="resources">
@@ -50,9 +53,9 @@
       <section class="account" aria-labelledby="account-title">
         <h2 id="account-title">Account overview</h2>
         <dl>
-          <div><dt>Employee</dt><dd>Elliot Alderson</dd></div>
-          <div><dt>Corporate email</dt><dd>elliot.alderson@allsafe.net</dd></div>
-          <div><dt>Department</dt><dd>Cybersecurity Operations</dd></div>
+          <div><dt>Employee</dt><dd>{{ user.full_name }}</dd></div>
+          <div><dt>Corporate email</dt><dd>{{ user.email }}</dd></div>
+          <div><dt>Department</dt><dd>{{ user.department }}</dd></div>
         </dl>
       </section>
     </main>

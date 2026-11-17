@@ -17,12 +17,12 @@ toggle.addEventListener('click', () => {
 });
 
 form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  error.textContent = '';
   const email = username.value.trim().toLowerCase();
   const pw = password.value;
   if (!email || !pw) {
+    event.preventDefault();
     error.textContent = 'Please enter your corporate email and password!';
+    return;
   }
 });
 

@@ -41,7 +41,8 @@
         
         <p class="form-intro">Sign in with your corporate credentials to access the AllSafe workspace.</p>
         
-        <form id="login-form" novalidate>
+        <form id="login-form" method="post" action="/login" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
           <div class="field">
             <label for="username">Email</label>
             
@@ -77,7 +78,7 @@
             </label>
           </div>
           
-          <p id="form-error" class="form-error" role="alert" aria-live="polite"></p>
+          <p id="form-error" class="form-error" role="alert" aria-live="polite">{{ error or '' }}</p>
           
           <button class="submit" type="submit">
             <span>Sign in to workspace</span>

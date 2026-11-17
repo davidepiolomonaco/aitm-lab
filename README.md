@@ -29,6 +29,7 @@ The credentials are relayed as typed, not hard-coded — this is what a real AiT
 ## Running it
 
 ```bash
+cp .env.example .env        # first run only
 scripts/start.sh            # brings up both stacks + the shared relay network
 scripts/monitor.py          # optional: live event timeline for the class
 ```
@@ -41,6 +42,8 @@ scripts/stop.sh [legitimate | phishing | all]
 scripts/reset.sh            # wipes the legitimate DB/sessions and restarts it
 ```
 
+Sessions expire after `SESSION_TTL_MINUTES` (45 by default). If a demo run sits too long before you get to the Burp follow-up, the stolen token will have expired server-side — just submit the demo credentials on the phishing clone again to mint a fresh one.
+
 ## Follow-up lesson: replaying the stolen token in Burp Suite
 
 Every successful relay persists the exfiltrated cookies to a named Docker volume (`loot_data`), independent of the live demo's terminal session, so you can come back to it in the next lesson:
@@ -49,7 +52,7 @@ Every successful relay persists the exfiltrated cookies to a named Docker volume
 scripts/loot.sh             # dumps every captured session as JSON
 ```
 
-Each record has a `replay_header` (the literal `Cookie:` header value) and a `replay_url` (the real app's `/workspace`). In Burp Suite:
+Each record has a `replay_header` (the literal `Cookie:` header value) and a `replay_url` (the real app's `/workspace`). Use the **most recent** record — sessions expire after `SESSION_TTL_MINUTES` (45 by default), so a token captured too long before the Burp lesson will already be dead server-side; if so, just submit the demo credentials on the phishing clone again right before the lesson to mint a fresh one. In Burp Suite:
 
 1. Send a `GET /workspace` request to `http://127.0.0.1:8081` to Repeater.
 2. Replace its `Cookie` header with the captured `replay_header` value.

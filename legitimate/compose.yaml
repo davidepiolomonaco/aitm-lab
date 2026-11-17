@@ -9,7 +9,11 @@ services:
     depends_on:
       - app
     networks:
-      - legitimate_net
+      legitimate_front: {}
+      legitimate_net: {}
+      relay_net:
+        aliases:
+          - legitimate-gateway
   app:
     build: ./allsafe
     environment:
@@ -39,7 +43,12 @@ services:
     networks:
       - legitimate_net
 networks:
+  # Bridges the published port to the host.
+  legitimate_front: {}
   legitimate_net:
     internal: true
+  relay_net:
+    name: aitm-relay-net
+    external: true
 volumes:
   legitimate_pgdata:

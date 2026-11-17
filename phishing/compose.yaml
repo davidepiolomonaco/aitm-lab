@@ -7,7 +7,16 @@ services:
     ports:
       - "127.0.0.1:${REPLICA_PORT:-8082}:80"
     networks:
+      # Not internal: required so the published host port actually works —
+      # an `internal: true` network has no NAT route in either direction,
+      # including inbound from the host, so the port publish below would
+      # silently never bind without this.
+      - replica_front
       - replica_net
 networks:
+  # Bridges the published port to the host. Only nginx attaches to it; it
+  # never carries relay traffic, so it doesn't widen the relay's own
+  # isolation below.
+  replica_front: {}
   replica_net:
     internal: true

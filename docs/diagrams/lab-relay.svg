@@ -1,0 +1,49 @@
+<svg viewBox="0 0 480 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Victim submits credentials to the attacker relay on the shared host 127.0.0.1; the relay replays them to the real backend, receives the real session cookie, and both grafts it onto the victim's browser and lets the browser's own request reach the real backend directly afterward — because both sites share one host, the cookie is sent there automatically.">
+  <style>
+    text { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; fill: #1c1a16; }
+    .label { font-size: 12px; fill: #6b6559; }
+    .node-label { font-size: 13px; font-weight: 600; }
+    .node-sub { font-size: 11px; fill: #6b6559; }
+    .accent-line { stroke: #b23a2e; }
+    .accent-text { fill: #b23a2e; font-weight: 600; }
+    .node-box { fill: #ffffff; stroke: #d8d4cc; stroke-width: 1.5; }
+    .node-box.attacker { stroke: #9a9484; stroke-dasharray: 4 3; }
+    line, path.flow { stroke: #6b6559; stroke-width: 1.6; fill: none; }
+  </style>
+  <rect width="480" height="540" fill="#faf9f6"></rect>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b6559"></path>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b23a2e"></path>
+    </marker>
+  </defs>
+
+  <rect class="node-box" x="140" y="16" width="200" height="56" rx="8"></rect>
+  <text class="node-label" x="240" y="40" text-anchor="middle">Victim's browser</text>
+  <text class="node-sub" x="240" y="56" text-anchor="middle">visits 127.0.0.1:8082</text>
+
+  <rect class="node-box attacker" x="140" y="242" width="200" height="56" rx="8"></rect>
+  <text class="node-label" x="240" y="266" text-anchor="middle">Attacker relay</text>
+  <text class="node-sub" x="240" y="282" text-anchor="middle">phishing clone + relay, :8082</text>
+
+  <rect class="node-box" x="140" y="468" width="200" height="56" rx="8"></rect>
+  <text class="node-label" x="240" y="492" text-anchor="middle">Real backend</text>
+  <text class="node-sub" x="240" y="508" text-anchor="middle">legitimate app, 127.0.0.1:8081</text>
+
+  <line x1="205" y1="72" x2="205" y2="242" marker-end="url(#arrow)"></line>
+  <text class="label" x="195" y="150" text-anchor="end">POST credentials</text>
+
+  <line x1="205" y1="298" x2="205" y2="468" marker-end="url(#arrow)"></line>
+  <text class="label" x="195" y="390" text-anchor="end">replay login, server-side</text>
+
+  <line x1="280" y1="468" x2="280" y2="298" marker-end="url(#arrow)"></line>
+  <text class="label" x="290" y="390" text-anchor="start">Set-Cookie: real sid</text>
+
+  <line x1="280" y1="242" x2="280" y2="72" marker-end="url(#arrow)"></line>
+  <text class="label" x="290" y="150" text-anchor="start">redirect + grafted copy of sid</text>
+
+  <path class="flow accent-line" d="M 345 68 C 440 160, 440 400, 345 492" marker-end="url(#arrow-accent)"></path>
+  <text class="accent-text label" x="452" y="280" text-anchor="middle" transform="rotate(90 452 280)">same host → cookie auto-sent here next</text>
+</svg>

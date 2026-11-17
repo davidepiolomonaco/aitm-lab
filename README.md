@@ -13,7 +13,9 @@ An educational, local-only demonstration of an **Adversary-in-the-Middle (AiTM) 
 5. The relay **exfiltrates** that cookie — persists it to the `loot_data` volume and logs it in full — before grafting the same cookie onto the victim's own browser and redirecting it straight to `http://127.0.0.1:8081/workspace`. The victim lands on the **real, legitimate workspace, already logged in**, having never actually talked to it directly; meanwhile the attacker already has a standing copy of that same session.
 6. `scripts/monitor.py` surfaces the stolen token live, in a Rich table, the moment it's captured — ready to copy into the follow-up lesson.
 
-The credentials are relayed as typed, not hard-coded — this is what a real AiTM phishing kit (e.g. Evilginx-style) does to bypass "just check the URL" advice and even static-password MFA. A good discussion point for the class: the only thing that made step 5 "just work" is that both sites share the same host (`127.0.0.1`) — browsers scope cookies by domain, **not by port**, so a session cookie set while visiting port `8082` is also sent to port `8081`. That's a deliberate simplification to keep the lab self-contained on one machine; real AiTM kits instead rely on a look-alike *domain* and a TLS cert, and steal the session cookie directly rather than depending on a port quirk.
+The credentials are relayed as typed, not hard-coded — this is what a real AiTM phishing kit (e.g. Evilginx-style) does to bypass "just check the URL" advice and even static-password MFA.
+
+**Be explicit with the class about this: step 5 is a trick, not a reverse proxy.** It only works because both sites share the same host (`127.0.0.1`) — browsers scope cookies by domain, **not** by port, so a cookie set while visiting port `8082` is also sent to port `8081`. A real AiTM kit cannot do this: on two different domains, a cookie issued by the real site is simply invisible to the phishing domain, by design — there is no way to "graft" it into the victim's browser across domains. What a real kit does instead is run a **transparent reverse proxy**: the victim's browser never leaves the attacker's domain, every request (not just the login) is proxied live to the real backend and the response rewritten on the way back, and the stolen cookie is used by the attacker server-side, never by the victim's own browser. This lab's `relay` only proxies a single exchange (`POST /login`) and then hands the victim off with a copied cookie — a shortcut that only exists because of the shared-host quirk, not something you'd see against a real target. See [What a production AiTM kit adds](#what-a-production-aitm-kit-adds-and-why-this-lab-stops-short) below for the full comparison.
 
 ## Architecture
 
@@ -43,6 +45,32 @@ scripts/reset.sh            # wipes the legitimate DB/sessions and restarts it
 ```
 
 Sessions expire after `SESSION_TTL_MINUTES` (45 by default). If a demo run sits too long before you get to the Burp follow-up, the stolen token will have expired server-side — just submit the demo credentials on the phishing clone again to mint a fresh one.
+
+## What a production AiTM kit adds (and why this lab stops short)
+
+<p align="center">
+  <img src="docs/diagrams/lab-relay.svg" alt="This lab: victim submits credentials to the attacker relay, which replays them to the real backend, receives the real session cookie, grafts it onto the victim's browser, and lets the browser's own next request reach the real backend directly — because both sites share one host." width="440">
+</p>
+
+This lab's relay only covers a single login exchange, then hands the victim off with a *copy* of the real cookie. The curved red edge above — the victim's browser talking straight to the real backend — only exists because both sites share `127.0.0.1`. On a real target's separate domain, that edge is structurally impossible: a cookie scoped to one domain is never sent to another.
+
+<p align="center">
+  <img src="docs/diagrams/real-aitm-kit.svg" alt="A real AiTM kit: the victim stays on the attacker's domain for the whole session; every request is forwarded live to the real backend using a session kept only on the proxy, and every response is rewritten before being sent back. There is no edge from the victim's browser to the real backend." width="440">
+</p>
+
+A real kit instead runs a **persistent, transparent proxy**: there is no edge from the victim's browser to the real backend at all — every request loops through the attacker's proxy for the whole session, and the real cookie never leaves it.
+
+| | This lab | A real AiTM kit (Evilginx / Modlishka / EvilProxy) |
+|---|---|---|
+| **Scope of the relay** | A single exchange: only `POST /login` is relayed; everything after is the victim talking directly to whichever host it got redirected to. | A persistent, transparent reverse proxy: *every* request of the session — pages, static assets, AJAX — is proxied live and rewritten, for as long as the session lasts. |
+| **How the victim gets a "logged-in" page** | The relay copies the real cookie and sets it directly on the victim's own browser. | Never done, because it's not possible across domains — instead the victim keeps talking to the attacker's proxy, which fetches and relays the real pages behind the scenes. The victim's browser never holds the real cookie at all. |
+| **Why it "works" here** | A quirk of this lab only: phishing and real app share the same host (`127.0.0.1`), and cookies are scoped by domain, not by port. | Not applicable — real targets are on different domains, so this quirk doesn't exist there. |
+| **Domain & TLS** | None — both apps live on `127.0.0.1` at different ports. | A look-alike domain the attacker controls, with a valid TLS certificate, so the victim's browser shows no warning. |
+| **MFA** | Not modeled — the lab has one demo account with a single password factor. | The same relay-in-real-time trick intercepts and replays an OTP/push approval before it expires — this is the main reason AiTM kits are dangerous against MFA-protected accounts. |
+| **Evasion** | None. | IP reputation checks, bot/sandbox fingerprinting, blocklists — to avoid being analyzed or auto-detected. |
+| **What's genuinely the same** | Credentials are relayed live (not stored for later reuse), and a real session cookie is stolen server-side and is independently replayable (see the Burp section below) — that's the actual core AiTM mechanic, demonstrated honestly. | Same mechanic, at the scale and durability of a real attack. |
+
+This lab deliberately stops at the credential-relay + session-theft core and does not implement the reverse proxy, domain/TLS, MFA relay, or evasion layers — those are what turn a teaching demo into a deployable attack tool, and are out of scope for an isolated classroom lab.
 
 ## Follow-up lesson: replaying the stolen token in Burp Suite
 

@@ -7,12 +7,27 @@ import shutil
 import subprocess
 import threading
 from collections import deque
+from datetime import datetime
 from pathlib import Path
 
 from rich.console import Console, Group
 from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
+from rich.text import Text
+
+# Per-cell styling for the events table.
+SOURCE_STYLE = {"phishing": "red", "legitimate": "green"}
+KIND_STYLE = {
+    "credentials_captured": "bold red",
+    "session_hijacked": "bold red",
+    "relay_error": "bold yellow",
+    "login_denied": "yellow",
+    "login_denied_upstream": "yellow",
+    "login_success": "green",
+    "database_ready": "cyan",
+    "logout": "dim",
+}
 
 ROOT = Path(__file__).resolve().parent.parent
 entries = deque(maxlen=40)
@@ -44,19 +59,34 @@ SOURCES = {
 }
 
 
+def local_time(ts):
+    # Events carry a UTC ISO timestamp; show it in the host's local timezone.
+    try:
+        dt = datetime.fromisoformat(ts)
+    except (TypeError, ValueError):
+        return ts[11:19]
+    if dt.tzinfo is not None:
+        dt = dt.astimezone()
+    return dt.strftime("%H:%M:%S")
+
+
 def render():
-    table = Table(title="Allsafe — authentication & relay events")
+    table = Table(title="Allsafe — authentication & relay events", title_style="bold")
 
     for field in ("Time", "Source", "Event", "Account", "Token"):
         table.add_column(field)
 
     for item in list(entries):
+        source = item["source"]
+        kind = item["kind"]
+        username = item.get("username")
+        sid = item.get("sid")
         table.add_row(
-            item["timestamp"][11:19],
-            item["source"],
-            item["kind"],
-            item.get("username") or "—",
-            item.get("sid") or "—",
+            Text(local_time(item["timestamp"]), style="dim"),
+            Text(source, style=SOURCE_STYLE.get(source, "")),
+            Text(kind, style=KIND_STYLE.get(kind, "")),
+            Text(username, style="magenta") if username else Text("—", style="dim"),
+            Text(sid, style="yellow") if sid else Text("—", style="dim"),
         )
 
     if last_capture is None:

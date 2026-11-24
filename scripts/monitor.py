@@ -3,6 +3,7 @@
 
 import json
 import queue
+import shutil
 import subprocess
 import threading
 from collections import deque
@@ -17,6 +18,17 @@ ROOT = Path(__file__).resolve().parent.parent
 entries = deque(maxlen=40)
 events = queue.Queue()
 last_capture = None  # most recent session_hijacked event, for the panel below the table
+
+# Prefer the `docker compose` plugin; fall back to the standalone `docker-compose`.
+if shutil.which("docker") and subprocess.run(
+    ["docker", "compose", "version"],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+).returncode == 0:
+    COMPOSE = ["docker", "compose"]
+elif shutil.which("docker-compose"):
+    COMPOSE = ["docker-compose"]
+else:
+    raise SystemExit("Neither 'docker compose' nor 'docker-compose' is available on PATH.")
 
 SOURCES = {
     "legitimate": {
@@ -67,7 +79,7 @@ def render():
 
 def follow(source, cfg):
     cmd = [
-        "docker", "compose", "-f", str(cfg["compose"]),
+        *COMPOSE, "-f", str(cfg["compose"]),
         "logs", "--follow", "--tail", "20", "--no-color", cfg["service"],
     ]
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)

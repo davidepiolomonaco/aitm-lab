@@ -9,6 +9,7 @@ import threading
 from collections import deque
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 from rich.console import Console, Group
 from rich.live import Live
@@ -70,6 +71,22 @@ def local_time(ts):
     return dt.strftime("%H:%M:%S")
 
 
+def burp_request(capture):
+    # Fall back to the known target for events captured before the relay
+    # started emitting replay_url.
+    url = capture.get("replay_url") or "http://127.0.0.1:8081/workspace"
+    parsed = urlparse(url)
+    host = parsed.netloc or "127.0.0.1:8081"
+    path = parsed.path or "/workspace"
+    cookie = capture.get("replay_header", "")
+    return (
+        f"GET {path} HTTP/1.1\n"
+        f"Host: {host}\n"
+        f"Cookie: {cookie}\n"
+        "Connection: close\n"
+    )
+
+
 def render():
     table = Table(title="Allsafe — authentication & relay events", title_style="bold")
 
@@ -96,13 +113,25 @@ def render():
             border_style="grey50",
         )
     else:
-        body = (
-            f"[bold]Account:[/bold]  {last_capture.get('username')}\n"
-            f"[bold]Replay header:[/bold]  Cookie: {last_capture.get('replay_header')}\n"
-            f"[bold]Replay target:[/bold]  GET {last_capture.get('replay_url', '')}\n"
-            f"[dim]Paste the Cookie header above into Burp Suite's Repeater against the replay target.[/dim]"
+        # Open-sided frame: only the top and bottom rules carry corners, there
+        # are no │ side borders. The request lines therefore sit at column 0
+        # with nothing to their left, so a mouse-selection copies them cleanly
+        # into Burp instead of dragging in the panel borders.
+        width = max(20, shutil.get_terminal_size((100, 24)).columns)
+        label = f" Copy and paste this into Burp Repeater  ({last_capture.get('username')}) "
+        # Title centered in the top rule, same red as the frame.
+        inner = max(len(label), width - 2)
+        pad = inner - len(label)
+        left = pad // 2
+        top = "┌" + "─" * left + label + "─" * (pad - left) + "┐"
+        bottom = "└" + "─" * (width - 2) + "┘"
+        panel = Group(
+            Text(top, style="red", no_wrap=True, overflow="ignore"),
+            Text(""),
+            Text(burp_request(last_capture).rstrip("\n"), style="green", no_wrap=True, overflow="ignore"),
+            Text(""),
+            Text(bottom, style="red", no_wrap=True, overflow="ignore"),
         )
-        panel = Panel(body, title="Last captured session (for Burp Suite)", border_style="red")
 
     return Group(table, panel)
 

